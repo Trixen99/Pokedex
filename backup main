@@ -8,7 +8,6 @@ import (
 
 func main() {
 	commandLine := bufio.NewScanner(os.Stdin)
-	initValidCommands()
 
 	for {
 		fmt.Print("Pokedex > ")

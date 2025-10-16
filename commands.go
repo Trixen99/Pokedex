@@ -5,32 +5,28 @@ import (
 	"os"
 )
 
-type commandStart interface {
-	startcommand()
-}
-
 type cliCommand struct {
 	name        string
 	description string
 	callback    func() error
 }
 
-var validCommands = map[string]cliCommand{
-	"exit": {
-		name:        "exit",
-		description: "Exit the Pokedex",
-		callback:    commandExit,
-	},
-	"help": {
-		name:        "help",
-		description: "Displays a help message",
-		callback:    commandExit,
-	},
+var validCommands = map[string]cliCommand{}
+
+func initValidCommands() {
+	validCommands = map[string]cliCommand{
+		"exit": {
+			name:        "exit",
+			description: "Exit the Pokedex",
+			callback:    commandExit,
+		},
+		"help": {
+			name:        "help",
+			description: "Displays a help message",
+			callback:    commandHelp,
+		},
+	}
 }
-
-//func (c cliCommand) startCommand {
-
-//}
 
 func commandExit() error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
@@ -38,11 +34,11 @@ func commandExit() error {
 	return fmt.Errorf("Status code: 0")
 }
 
-/*func commandHelp() error {
+func commandHelp() error {
+	fmt.Println("Welcome to the Pokedex!")
 	fmt.Println("Usage:")
 	for _, command := range validCommands {
-		fmt.Printf("%v: %v", command.name, command.description)
+		fmt.Printf("%v: %v\n", command.name, command.description)
 	}
 	return nil
 }
-*/
