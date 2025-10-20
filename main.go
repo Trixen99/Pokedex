@@ -6,7 +6,10 @@ import (
 	"os"
 )
 
+var mapCFG = initconfig()
+
 func main() {
+
 	commandLine := bufio.NewScanner(os.Stdin)
 	initValidCommands()
 
