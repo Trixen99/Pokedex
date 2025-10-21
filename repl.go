@@ -1,8 +1,29 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
+	"os"
 	"strings"
 )
+
+func startRepl() {
+	commandLine := bufio.NewScanner(os.Stdin)
+	initValidCommands()
+
+	for {
+		fmt.Print("Pokedex > ")
+		commandLine.Scan()
+		text := cleanInput(commandLine.Text())
+		//fmt.Printf("Your command was: %v\n", text[0])
+		command, ok := validCommands[text[0]]
+		if !ok {
+			fmt.Printf("Command: '%v' not recognised\n", text[0])
+		} else {
+			command.callback()
+		}
+	}
+}
 
 func cleanInput(text string) []string {
 	finalSlice := []string{}
