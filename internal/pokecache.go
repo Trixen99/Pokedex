@@ -32,3 +32,15 @@ func (c *Cache) Add(key string, val []byte) {
 		val:       val,
 	}
 }
+
+func (c *Cache) Get(key string) ([]byte, bool) {
+	c.Lock()
+	defer c.Unlock()
+	valByte, ok := c.data[key]
+	if ok {
+		return valByte.val, true
+	} else {
+		return []byte{}, false
+	}
+
+}
