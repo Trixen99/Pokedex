@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	//"github.com/Trixen99/Pokedex/internal"
 )
 
 func startRepl() {

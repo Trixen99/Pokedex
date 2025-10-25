@@ -6,7 +6,12 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"time"
+
+	"github.com/Trixen99/Pokedex/internal"
 )
+
+var mapCache *internal.Cache = internal.NewCache(time.Second * 60)
 
 type Named struct {
 	Next     *string            `json:"next"`
@@ -75,6 +80,15 @@ func commandMap() error {
 		url = mapCFG.next
 	}
 
+	data, ok := mapCache.Get(url)
+	if ok {
+		stringData := string(data)
+		for _, data := range stringData {
+			fmt.Println(data)
+		}
+		return nil
+	}
+
 	mapList, err := getLocationData(url)
 	if err != nil {
 		return err
@@ -92,9 +106,16 @@ func commandMap() error {
 		mapCFG.next = ""
 	}
 
+	LocationData := []byte{}
+
 	for _, loc := range mapList.Results {
+		byteloc := []byte(loc.Name)
+		LocationData = append(LocationData, byteloc[0])
 		fmt.Println(loc.Name)
 	}
+
+	mapCache.Add(url, LocationData)
+
 	fmt.Print("\n")
 	return nil
 
