@@ -80,18 +80,20 @@ func commandMap() error {
 		url = mapCFG.next
 	}
 
-	data, ok := mapCache.Get(url)
-	if ok {
-		stringData := string(data)
-		for _, data := range stringData {
-			fmt.Println(data)
+	var mapbyte []byte
+
+	mapbyte, ok := mapCache.Get(url)
+	if !ok {
+		locationData, err := getLocationData(url)
+		if err != nil {
+			return err
 		}
-		return nil
+		mapbyte = locationData
 	}
 
-	mapList, err := getLocationData(url)
+	mapList, err := convertLocationData(mapbyte)
 	if err != nil {
-		return err
+		return fmt.Errorf("error received: %v", err)
 	}
 
 	if mapList.Previous != nil {
@@ -106,15 +108,9 @@ func commandMap() error {
 		mapCFG.next = ""
 	}
 
-	LocationData := []byte{}
-
 	for _, loc := range mapList.Results {
-		byteloc := []byte(loc.Name)
-		LocationData = append(LocationData, byteloc[0])
 		fmt.Println(loc.Name)
 	}
-
-	mapCache.Add(url, LocationData)
 
 	fmt.Print("\n")
 	return nil
@@ -128,9 +124,20 @@ func commandMapb() error {
 	}
 	url := mapCFG.previous
 
-	mapList, err := getLocationData(url)
+	var mapbyte []byte
+
+	mapbyte, ok := mapCache.Get(url)
+	if !ok {
+		locationData, err := getLocationData(url)
+		if err != nil {
+			return err
+		}
+		mapbyte = locationData
+	}
+
+	mapList, err := convertLocationData(mapbyte)
 	if err != nil {
-		return err
+		return fmt.Errorf("error received: %v", err)
 	}
 
 	if mapList.Previous != nil {
@@ -153,26 +160,32 @@ func commandMapb() error {
 
 }
 
-func getLocationData(url string) (Named, error) {
+func getLocationData(url string) ([]byte, error) {
 	res, err := http.Get(url)
 	if err != nil {
-		var errNamed Named
+		var errNamed []byte
 		return errNamed, fmt.Errorf("error with 'GET' request: %v", err)
 	}
 
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		var errNamed Named
+		var errNamed []byte
 		return errNamed, fmt.Errorf("unexpected status: %s", res.Status)
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		var errNamed Named
-		return errNamed, fmt.Errorf("err")
+		var errNamed []byte
+		return errNamed, fmt.Errorf("error: %v", err)
 	}
 
+	mapCache.Add(url, body)
+
+	return body, nil
+}
+
+func convertLocationData(body []byte) (Named, error) {
 	var mapList Named
 	if err := json.Unmarshal(body, &mapList); err != nil {
 		var errNamed Named
