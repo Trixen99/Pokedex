@@ -163,21 +163,18 @@ func commandMapb() error {
 func getLocationData(url string) ([]byte, error) {
 	res, err := http.Get(url)
 	if err != nil {
-		var errNamed []byte
-		return errNamed, fmt.Errorf("error with 'GET' request: %v", err)
+		return nil, fmt.Errorf("error with 'GET' request: %v", err)
 	}
 
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		var errNamed []byte
-		return errNamed, fmt.Errorf("unexpected status: %s", res.Status)
+		return nil, fmt.Errorf("unexpected status: %s", res.Status)
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		var errNamed []byte
-		return errNamed, fmt.Errorf("error: %v", err)
+		return nil, fmt.Errorf("error: %v", err)
 	}
 
 	mapCache.Add(url, body)
