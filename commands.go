@@ -13,23 +13,6 @@ import (
 
 var mapCache *internal.Cache = internal.NewCache(time.Second * 60)
 
-type Named struct {
-	Next     *string            `json:"next"`
-	Previous *string            `json:"previous"`
-	Results  []NamedAPIResource `json:"results"`
-}
-
-type NamedAPIResource struct {
-	Name string `json:"name"`
-	URL  string `json:"url"`
-}
-
-type cliCommand struct {
-	name        string
-	description string
-	callback    func() error
-}
-
 var validCommands = map[string]cliCommand{}
 
 func initValidCommands() {
@@ -53,6 +36,11 @@ func initValidCommands() {
 			name:        "mapb",
 			description: "Displays the names of the previous 20 location areas in the Pokemon world.",
 			callback:    commandMapb,
+		},
+		"explore": {
+			name:        "Explore",
+			description: "Displays the names of all Pokemon found in the requested location in the Pokemon World",
+			callback:    commandExplore,
 		},
 	}
 }
@@ -186,8 +174,29 @@ func convertLocationData(body []byte) (Named, error) {
 	var mapList Named
 	if err := json.Unmarshal(body, &mapList); err != nil {
 		var errNamed Named
-		return errNamed, fmt.Errorf("error3")
+		return errNamed, fmt.Errorf("error: %v", err)
 	}
 
 	return mapList, nil
+}
+
+func commandExplore() error {
+	res, err := http.Get("https://pokeapi.co/api/v2/location-area/pastoria-city-area")
+	if err != nil {
+		return fmt.Errorf("error with 'GET' request: %v", err)
+	}
+
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return fmt.Errorf("error with 'GET' request: %v", err)
+	}
+	var currentLocation LocationArea
+	if err := json.Unmarshal(body, &currentLocation); err != nil {
+		return fmt.Errorf("error: %v", err)
+	}
+
+	fmt.Println(currentLocation)
+	return nil
 }

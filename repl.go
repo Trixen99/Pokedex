@@ -20,7 +20,7 @@ func startRepl() {
 		if !ok {
 			fmt.Printf("Command: '%v' not recognised\n", text[0])
 		} else {
-			command.callback()
+			fmt.Println(command.callback())
 		}
 	}
 }
