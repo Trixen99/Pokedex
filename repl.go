@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+var CLText []string
+
 func startRepl() {
 	commandLine := bufio.NewScanner(os.Stdin)
 	initValidCommands()
@@ -14,14 +16,41 @@ func startRepl() {
 	for {
 		fmt.Print("Pokedex > ")
 		commandLine.Scan()
-		text := cleanInput(commandLine.Text())
-		//fmt.Printf("Your command was: %v\n", text[0])
-		command, ok := validCommands[text[0]]
+		CLText = cleanInput(commandLine.Text())
+		command, ok := validCommands[CLText[0]]
 		if !ok {
-			fmt.Printf("Command: '%v' not recognised\n", text[0])
+			fmt.Printf("Command: '%v' not recognised\n", CLText[0])
 		} else {
-			fmt.Println(command.callback())
+			callCommand(CLText, command)
+			//err := command.callback()
+			//if err != nil {
+			//	fmt.Println(err)
+			//}
 		}
+	}
+}
+
+func callCommand(text []string, command cliCommand) {
+	switch text[0] {
+	case "explore":
+		if len(text) <= 1 {
+			fmt.Println("not enough arguments provided for the command")
+			return
+		}
+		err := command.callback()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+	default:
+		err := command.callback()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		return
+
 	}
 }
 

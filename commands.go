@@ -11,7 +11,7 @@ import (
 	"github.com/Trixen99/Pokedex/internal"
 )
 
-var mapCache *internal.Cache = internal.NewCache(time.Second * 60)
+var GETCache *internal.Cache = internal.NewCache(time.Second * 60)
 
 var validCommands = map[string]cliCommand{}
 
@@ -38,7 +38,7 @@ func initValidCommands() {
 			callback:    commandMapb,
 		},
 		"explore": {
-			name:        "Explore",
+			name:        "explore",
 			description: "Displays the names of all Pokemon found in the requested location in the Pokemon World",
 			callback:    commandExplore,
 		},
@@ -70,9 +70,10 @@ func commandMap() error {
 
 	var mapbyte []byte
 
-	mapbyte, ok := mapCache.Get(url)
+	mapbyte, ok := GETCache.Get(url)
 	if !ok {
-		locationData, err := getLocationData(url)
+		locationData, err := httpClientRequest("GET", url)
+		//getLocationData(url)
 		if err != nil {
 			return err
 		}
@@ -114,9 +115,10 @@ func commandMapb() error {
 
 	var mapbyte []byte
 
-	mapbyte, ok := mapCache.Get(url)
+	mapbyte, ok := GETCache.Get(url)
 	if !ok {
-		locationData, err := getLocationData(url)
+		locationData, err := httpClientRequest("GET", url)
+		//getLocationData(url)
 		if err != nil {
 			return err
 		}
@@ -165,7 +167,7 @@ func getLocationData(url string) ([]byte, error) {
 		return nil, fmt.Errorf("error: %v", err)
 	}
 
-	mapCache.Add(url, body)
+	GETCache.Add(url, body)
 
 	return body, nil
 }

@@ -33,7 +33,7 @@ func httpClientRequest(request string, url string) ([]byte, error) {
 			return nil, fmt.Errorf("error with ReadAll: %v", err)
 		}
 
-		mapCache.Add(url, body)
+		GETCache.Add(url, body)
 
 		return body, nil
 
