@@ -19,7 +19,7 @@ func httpClientRequest(request string, url string) ([]byte, error) {
 
 		res, err := client.Do(req)
 		if err != nil {
-			return nil, fmt.Errorf("error with client.Do(): %v", err)
+			return nil, fmt.Errorf("error with httpClientRequest(client.Do()): %v", err)
 		}
 
 		defer res.Body.Close()

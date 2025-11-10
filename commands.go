@@ -3,8 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
 	"time"
 
@@ -150,28 +148,6 @@ func commandMapb() error {
 
 }
 
-func getLocationData(url string) ([]byte, error) {
-	res, err := http.Get(url)
-	if err != nil {
-		return nil, fmt.Errorf("error with 'GET' request: %v", err)
-	}
-
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status: %s", res.Status)
-	}
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, fmt.Errorf("error: %v", err)
-	}
-
-	GETCache.Add(url, body)
-
-	return body, nil
-}
-
 func convertLocationData(body []byte) (Named, error) {
 	var mapList Named
 	if err := json.Unmarshal(body, &mapList); err != nil {
@@ -183,22 +159,21 @@ func convertLocationData(body []byte) (Named, error) {
 }
 
 func commandExplore() error {
-	res, err := http.Get("https://pokeapi.co/api/v2/location-area/pastoria-city-area")
+	location := CLText[1]
+	url := fmt.Sprintf("https://pokeapi.co/api/v2/location-area/%v", location)
+	body, err := httpClientRequest("GET", url)
 	if err != nil {
 		return fmt.Errorf("error with 'GET' request: %v", err)
 	}
 
-	defer res.Body.Close()
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return fmt.Errorf("error with 'GET' request: %v", err)
-	}
 	var currentLocation LocationArea
 	if err := json.Unmarshal(body, &currentLocation); err != nil {
 		return fmt.Errorf("error: %v", err)
 	}
+	for i, _ := range currentLocation.Pokemon_encounters {
+		fmt.Printf("- %v\n", currentLocation.Pokemon_encounters[i].Pokemon.Name)
+	}
+	fmt.Print("\n")
 
-	fmt.Println(currentLocation)
 	return nil
 }
