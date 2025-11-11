@@ -40,6 +40,11 @@ func initValidCommands() {
 			description: "Displays the names of all Pokemon found in the requested location in the Pokemon World",
 			callback:    commandExplore,
 		},
+		"catch": {
+			name:        "catch",
+			description: "attempts to catch the designated Pokemon",
+			callback:    commandCatch,
+		},
 	}
 }
 
@@ -175,5 +180,12 @@ func commandExplore() error {
 	}
 	fmt.Print("\n")
 
+	return nil
+}
+
+func commandCatch() error {
+	pokemon := CLText[1]
+	url := fmt.Sprintf("https://pokeapi.co/api/v2/pokemon/%v", pokemon)
+	fmt.Println(url)
 	return nil
 }
