@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"os"
 	"time"
 
@@ -186,6 +187,28 @@ func commandExplore() error {
 func commandCatch() error {
 	pokemon := CLText[1]
 	url := fmt.Sprintf("https://pokeapi.co/api/v2/pokemon/%v", pokemon)
-	fmt.Println(url)
+	data, err := httpClientRequest("GET", url)
+	if err != nil {
+		return err
+	}
+	var pokemonData Pokemon
+	if err := json.Unmarshal(data, &pokemonData); err != nil {
+		return fmt.Errorf("error: %v", err)
+	}
+	fmt.Printf("Throwing a Pokeball at %v", pokemonData.Name)
+	time.Sleep(time.Second * 1)
+	for i := 0; i < 3; i++ {
+		fmt.Print(".")
+		time.Sleep(time.Second * 1)
+	}
+	fmt.Print("\n")
+
+	base := pokemonData.Base_experience
+	if rand.Intn(base) >= base-((base/100)*45) {
+		fmt.Printf("%v was caught!\n", pokemonData.Name)
+	} else {
+		fmt.Printf("%v escaped!\n", pokemonData.Name)
+	}
+
 	return nil
 }

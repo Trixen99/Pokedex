@@ -60,3 +60,9 @@ type Encounter struct {
 	Chance           int                `json:"Chance"`
 	Method           NamedAPIResource   `json:"Method"`
 }
+
+type Pokemon struct {
+	Id              int    `json:"id"`
+	Name            string `json:"name"`
+	Base_experience int    `json:"base_experience"`
+}
