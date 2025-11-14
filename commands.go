@@ -204,8 +204,22 @@ func commandCatch() error {
 	fmt.Print("\n")
 
 	base := pokemonData.Base_experience
-	if rand.Intn(base) >= base-((base/100)*45) {
+	captured := false
+	if base < 30 {
+		if rand.Intn(base) >= (base / 2) {
+			captured = true
+		}
+	} else {
+		if rand.Intn(base) > base-20 {
+			captured = true
+		}
+	}
+
+	if captured {
 		fmt.Printf("%v was caught!\n", pokemonData.Name)
+		id := len(CapturedPokemon) + 1
+		CapturedPokemon[id] = pokemonData
+
 	} else {
 		fmt.Printf("%v escaped!\n", pokemonData.Name)
 	}

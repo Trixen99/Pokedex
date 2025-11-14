@@ -8,10 +8,13 @@ import (
 )
 
 var CLText []string
+var CapturedPokemon map[int]Pokemon
 
 func startRepl() {
 	commandLine := bufio.NewScanner(os.Stdin)
 	initValidCommands()
+	fmt.Printf("current Pokemon:\n %v\n", CapturedPokemon)
+	CapturedPokemon = make(map[int]Pokemon)
 
 	for {
 		fmt.Print("Pokedex > ")
@@ -22,10 +25,7 @@ func startRepl() {
 			fmt.Printf("Command: '%v' not recognised\n", CLText[0])
 		} else {
 			callCommand(CLText, command)
-			//err := command.callback()
-			//if err != nil {
-			//	fmt.Println(err)
-			//}
+
 		}
 	}
 }
