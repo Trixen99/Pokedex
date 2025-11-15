@@ -8,13 +8,13 @@ import (
 )
 
 var CLText []string
-var CapturedPokemon map[int]Pokemon
+var CapturedPokemon map[string]Pokemon
 
 func startRepl() {
 	commandLine := bufio.NewScanner(os.Stdin)
 	initValidCommands()
 	fmt.Printf("current Pokemon:\n %v\n", CapturedPokemon)
-	CapturedPokemon = make(map[int]Pokemon)
+	CapturedPokemon = make(map[string]Pokemon)
 
 	for {
 		fmt.Print("Pokedex > ")

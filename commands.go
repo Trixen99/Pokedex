@@ -46,6 +46,11 @@ func initValidCommands() {
 			description: "attempts to catch the designated Pokemon",
 			callback:    commandCatch,
 		},
+		"inspect": {
+			name:        "inspect",
+			description: "displays information about the requested pokemon",
+			callback:    commandInspect,
+		},
 	}
 }
 
@@ -195,6 +200,11 @@ func commandCatch() error {
 	if err := json.Unmarshal(data, &pokemonData); err != nil {
 		return fmt.Errorf("error: %v", err)
 	}
+	_, ok := CapturedPokemon[pokemonData.Name]
+	if ok {
+		return fmt.Errorf("Pokemon already Captured")
+	}
+
 	fmt.Printf("Throwing a Pokeball at %v", pokemonData.Name)
 	time.Sleep(time.Second * 1)
 	for i := 0; i < 3; i++ {
@@ -217,12 +227,31 @@ func commandCatch() error {
 
 	if captured {
 		fmt.Printf("%v was caught!\n", pokemonData.Name)
-		id := len(CapturedPokemon) + 1
-		CapturedPokemon[id] = pokemonData
+		CapturedPokemon[pokemonData.Name] = pokemonData
 
 	} else {
 		fmt.Printf("%v escaped!\n", pokemonData.Name)
 	}
 
 	return nil
+}
+
+func commandInspect() error {
+	pokemon, ok := CapturedPokemon[CLText[1]]
+	if !ok {
+		return fmt.Errorf("you have not caught that pokemon")
+	}
+	fmt.Printf("Name: %v\n", pokemon.Name)
+	fmt.Printf("Height: %v\n")
+	fmt.Printf("Weight: %v\n")
+	fmt.Println("Stats:")
+	fmt.Printf("  -hp: %v\n")
+	fmt.Printf("  -attack: %v\n")
+	fmt.Printf("  -defense: %v\n")
+	fmt.Printf("  -special-attack: %v\n")
+	fmt.Printf("  -special-defense: %v\n")
+	fmt.Printf("  -speed: %v\n")
+
+	return nil
+
 }
