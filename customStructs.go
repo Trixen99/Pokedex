@@ -62,7 +62,21 @@ type Encounter struct {
 }
 
 type Pokemon struct {
-	Id              int    `json:"id"`
-	Name            string `json:"name"`
-	Base_experience int    `json:"base_experience"`
+	Id              int           `json:"id"`
+	Name            string        `json:"name"`
+	Base_experience int           `json:"base_experience"`
+	Weight          int           `json:"Weight"`
+	Height          int           `json:"Height"`
+	Stats           []PokemonStat `json:"Stats"`
+	Types           []PokemonType `json:"Types"`
+}
+
+type PokemonStat struct {
+	Stat      NamedAPIResource `json:"stat"`
+	Effort    int              `json:"effort"`
+	Base_stat int              `json:"base_stat"`
+}
+
+type PokemonType struct {
+	Type NamedAPIResource `json:"Type"`
 }

@@ -51,6 +51,11 @@ func initValidCommands() {
 			description: "displays information about the requested pokemon",
 			callback:    commandInspect,
 		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "displays a list of all caught pokemon",
+			callback:    commandPokedex,
+		},
 	}
 }
 
@@ -214,7 +219,7 @@ func commandCatch() error {
 	fmt.Print("\n")
 
 	base := pokemonData.Base_experience
-	captured := false
+	captured := true //false
 	if base < 30 {
 		if rand.Intn(base) >= (base / 2) {
 			captured = true
@@ -228,6 +233,7 @@ func commandCatch() error {
 	if captured {
 		fmt.Printf("%v was caught!\n", pokemonData.Name)
 		CapturedPokemon[pokemonData.Name] = pokemonData
+		fmt.Println("You may now inspect it with the inspect command.")
 
 	} else {
 		fmt.Printf("%v escaped!\n", pokemonData.Name)
@@ -241,17 +247,33 @@ func commandInspect() error {
 	if !ok {
 		return fmt.Errorf("you have not caught that pokemon")
 	}
-	fmt.Printf("Name: %v\n", pokemon.Name)
-	fmt.Printf("Height: %v\n")
-	fmt.Printf("Weight: %v\n")
-	fmt.Println("Stats:")
-	fmt.Printf("  -hp: %v\n")
-	fmt.Printf("  -attack: %v\n")
-	fmt.Printf("  -defense: %v\n")
-	fmt.Printf("  -special-attack: %v\n")
-	fmt.Printf("  -special-defense: %v\n")
-	fmt.Printf("  -speed: %v\n")
 
+	fmt.Printf("Name: %v\n", pokemon.Name)
+	fmt.Printf("Height: %v\n", pokemon.Height)
+	fmt.Printf("Weight: %v\n", pokemon.Weight)
+	fmt.Println("Stats:")
+
+	for _, pokemonstat := range pokemon.Stats {
+		name := pokemonstat.Stat.Name
+		base := pokemonstat.Base_stat
+		fmt.Printf("  -%v: %v\n", name, base)
+	}
+	fmt.Println("Types:")
+	for _, pokemontype := range pokemon.Types {
+		name := pokemontype.Type.Name
+		fmt.Printf("  - %v\n", name)
+	}
 	return nil
 
+}
+
+func commandPokedex() error {
+	if len(CapturedPokemon) == 0 {
+		return fmt.Errorf("you don't have any caught pokemon")
+	}
+	fmt.Println("Your Pokedex:")
+	for k, _ := range CapturedPokemon {
+		fmt.Printf(" - %v\n", k)
+	}
+	return nil
 }

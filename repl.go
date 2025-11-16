@@ -20,6 +20,9 @@ func startRepl() {
 		fmt.Print("Pokedex > ")
 		commandLine.Scan()
 		CLText = cleanInput(commandLine.Text())
+		if len(CLText) == 0 {
+			continue
+		}
 		command, ok := validCommands[CLText[0]]
 		if !ok {
 			fmt.Printf("Command: '%v' not recognised\n", CLText[0])
